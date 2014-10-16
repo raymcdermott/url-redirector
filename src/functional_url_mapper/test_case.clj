@@ -20,11 +20,7 @@
   ; ignore requst - hard code for the purpose of a minimal test case... this file is publicly available
   (async-responder "https://s3-eu-west-1.amazonaws.com/ray-s3-test/100k-file-0"))
 
-; -------*** START WEB SERVER
-;
-
-; used to set output-buffer-size on jetty server, but makes no difference to this case
-(def bufsize (* 32768 16))
+(def bufsize (* 32768 16)) ; used to set output-buffer-size on jetty server, but makes no difference to this case
 
 (defn -main []
   (jet/run-jetty {:output-buffer-size bufsize :port 5000 :ring-handler responder}))
