@@ -4,12 +4,9 @@
             [qbits.jet.server :as jet]
             [qbits.jet.client.http :as http-client]))
 
-(defn url-fetcher [url]
-  (http-client/get (http-client/client) url))
-
 (defn async-responder [url]
   (let [response-channel (chan)]
-    (go (let [response (<! (url-fetcher url))
+    (go (let [response (<! (http-client/get (http-client/client) url))
               response-headers (:headers response)]
           (if (= 200 (:status response))
             (>! response-channel {:body    (<! (:body response))
