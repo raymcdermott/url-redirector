@@ -232,6 +232,8 @@
 ; -------*** START WEB SERVER
 ;
 
+(def bufsize (* 32768 16))                                   ; does it make any difference?
+
 (defn -main [& [port]]
   (let [port (Integer. (or port (env :port) 5000))]
-    (jet/run-jetty {:port port :join? false :ring-handler async-responder})))
+    (jet/run-jetty {:output-buffer-size bufsize :port port :join? false :ring-handler async-responder})))
