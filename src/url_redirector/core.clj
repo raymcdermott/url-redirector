@@ -1,4 +1,4 @@
-(ns functional-url-mapper.core
+(ns url-redirector.core
   (:import (java.net URL))
   (:require [clojure.core.async :as async :refer [<! >! <!! chan timeout go]]
             [ring.util.request :as request]

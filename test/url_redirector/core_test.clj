@@ -1,4 +1,4 @@
-(ns functional-url-mapper.core-test
+(ns url-redirector.core-test
   (:import (java.net URL))
   (:require [clojure.test :refer :all]
             [functional-url-mapper.core :refer :all]))

@@ -1,8 +1,8 @@
-(defproject functional-url-mapper "0.1.0-SNAPSHOT"
-  :description "FIXME: write description"
+(defproject url-redirector "0.1.0-SNAPSHOT"
+  :description "A Clojure library designed to manage URL redirection using data from a JSON document stored in MongoDB"
   :url "http://example.com/FIXME"
-  :license {:name "Eclipse Public License"
-            :url "http://www.eclipse.org/legal/epl-v10.html"}
+  :license {:name "Apache Public License"
+            :url "http://www.apache.org/licenses/LICENSE-2.0"}
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.clojure/core.async "0.1.346.0-17112a-alpha"]
                  [ring/ring-core "1.3.1"]
