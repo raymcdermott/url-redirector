@@ -4,15 +4,15 @@ A Clojure library designed to manage URL redirection using data from a JSON docu
 
 ## What redirections are supported?
 
-# Original Domain -> New Domain redirection
+### Original Domain -> New Domain redirection
 
 foo.com -> bar.com
 
-# Original Domain -> New Domain + path redirection
+### Original Domain -> New Domain + path redirection
 
 foo.com -> bar.com/place/index.html
 
-# Response: HTTP 301
+## Response: HTTP 301
 
 The library maps the original domain, transforms as appropriate and returns the new URL via HTTP 301
 
@@ -35,7 +35,7 @@ the same structure: source-domain and target-domain. The table lists the support
 | port          | number  | valid HTTP/S port | No       | None          |
 | path          | string  | resource path     | No       | None          |
 
-# Example 1: Domain redirection
+### Example 1: Domain redirection
 
 ```JavaScript
 {
@@ -48,7 +48,7 @@ the same structure: source-domain and target-domain. The table lists the support
 }
 ```
 
-# Example 2: Domain + path redirection
+### Example 2: Domain + path redirection
 
 ```JavaScript
 {
@@ -62,7 +62,7 @@ the same structure: source-domain and target-domain. The table lists the support
 }
 ```
 
-# Example 3: All options in use
+### Example 3: All options in use
 
 ```JavaScript
 {
