@@ -20,9 +20,13 @@ Specifically, 301 is recommended by Google to change the URL of a page as it is 
 
 foo.com -> bar.com
 
+TBD... paste in example output
+
 #### Original Domain -> New Domain + path redirection
 
 foo.com -> bar.com/place/index.html
+
+TBD... paste in example output
 
 ## Usage
 
@@ -33,9 +37,20 @@ the same structure: source-domain and target-domain. The table lists the support
 | --------      | ------- | --------------- | --------   | ------------- |
 | scheme        | string  | http or https   | No         | "http"        |
 | domain        | string  | domain name     | Yes        | None          |
-| domain        | string  | domain name     | Yes        | None          |
 | port          | number  | valid HTTP/S port | No       | None          |
 | path          | string  | resource path     | No       | None          |
+
+## Limitations
+
+In the existing design, no attempt is made to validate the transformed URLs.
+
+## Notes for PAAS platforms (for example Heroku)
+
+### Heroku
+
+The source domain must be added to the list of domains supported by the application. 
+
+This function is *NOT* provided by this application.
 
 ## Dependencies
 
@@ -105,9 +120,21 @@ You can tweak the application behaviour with a small number of options
 }
 ```
 
+## Testing
+
+The application comes with a number of pre-built tests to ensure that the general logic is valid.
+
+To confirm, you can run inspect the tests and run them with 'lein test'
+
+Please extend the test suite with your specific needs.
+
+## Pull requests
+
+I will accept pull requests for the core logic and especially for any new tests.
+
 ## License
 
-Copyright © 2014 opengrail bvba
+Copyright © 2014 Opengrail BVBA
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
