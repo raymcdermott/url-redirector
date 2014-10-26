@@ -1,18 +1,10 @@
 # url-redirector
 
-A Clojure library designed to manage URL redirection using data from a JSON document stored in MongoDB.
+A Clojure application designed to manage URL redirection using data from a JSON document stored in MongoDB and cached in REDIS.
 
-## What redirections are supported?
+*IMPORTANT*: By default the application has a maximum response time of 500ms, after which it will return a HTTP status 202
 
-### Original Domain -> New Domain redirection
-
-foo.com -> bar.com
-
-### Original Domain -> New Domain + path redirection
-
-foo.com -> bar.com/place/index.html
-
-## Response: HTTP 301
+### Response: HTTP 301
 
 The library maps the original domain, transforms as appropriate and returns the new URL via HTTP 301
 
@@ -21,6 +13,16 @@ The meaning of HTTP 301 is Moved Permanently. The semantics of this must fit you
 The detailed semantics of HTTP 301 is explained in [more detail on Wikipedia](https://en.wikipedia.org/wiki/HTTP_301)
 
 Specifically, 301 is recommended by Google to change the URL of a page as it is shown in search engine results.
+
+## What redirections are supported?
+
+#### Original Domain -> New Domain redirection
+
+foo.com -> bar.com
+
+#### Original Domain -> New Domain + path redirection
+
+foo.com -> bar.com/place/index.html
 
 ## Usage
 
@@ -35,7 +37,29 @@ the same structure: source-domain and target-domain. The table lists the support
 | port          | number  | valid HTTP/S port | No       | None          |
 | path          | string  | resource path     | No       | None          |
 
-### Example 1: Domain redirection
+## Dependencies
+
+You need to install locally or have network services that provide MongoDB and REDIS.
+
+The application will attach to these services using the following variables / defaults
+ 
+| Name          | Default Value |
+| --------      | ------------- |
+| MONGO_URL     | mongodb://localhost/test |
+| REDIS_URL     | 127.0.0.1:6379 |
+
+## Options
+
+You can tweak the application behaviour with a small number of options
+
+| Name          | Meaning          | Default Value |
+| --------      | -------          | ------------- |
+| PORT | Port # for exposed HTTP endpoint | 5000 |
+| MONGO_COLLECTION  | Document collection name | redirections |
+| REDIS_TTL_SECONDS | # Seconds REDIS caches values | 30 |
+| SLA_MILLISECONDS | # Milliseconds before SLA fails (HTTP 202 response) | 500 |
+
+###### Example 1: Domain redirection
 
 ```JavaScript
 {
@@ -48,7 +72,7 @@ the same structure: source-domain and target-domain. The table lists the support
 }
 ```
 
-### Example 2: Domain + path redirection
+###### Example 2: Domain + path redirection
 
 ```JavaScript
 {
@@ -62,7 +86,7 @@ the same structure: source-domain and target-domain. The table lists the support
 }
 ```
 
-### Example 3: All options in use
+###### Example 3: All options in use
 
 ```JavaScript
 {
