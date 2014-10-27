@@ -52,7 +52,9 @@ the same structure: source-domain and target-domain. The table lists the support
 
 A set of operations are supported to mutate the path. The mutation operations are one of `prepend`, `append`, `regex` or `drop`
 
-For the drop operation there are a two more specific properties:
+The operations `prepend`, `append`, `regex` options take a string value that will be applied.
+
+The drop operation has two more specific properties:
 
 | Property      | Type    | Values                       | Required?  | Default Value |
 | --------      | ------- | ---------------------------- | --------   | ------------- |
