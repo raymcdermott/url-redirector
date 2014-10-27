@@ -50,7 +50,7 @@ the same structure: source-domain and target-domain. The table lists the support
 | path          | string  | resource path     | No       | None          |
 | operations    | object  | see other table | No         | None          |
 
-A set of operations are supported to mutate the path. The mutation operations are one of prepend, append, regex or drop
+A set of operations are supported to mutate the path. The mutation operations are one of `prepend`, `append`, `regex` or `drop`
 
 For the drop operation there are a two more specific properties:
 
