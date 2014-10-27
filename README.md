@@ -2,8 +2,6 @@
 
 A Clojure application designed to manage URL redirection using data from a JSON document stored in MongoDB and cached in REDIS.
 
-*IMPORTANT*: By default the application has a maximum response time of 500ms, after which it will return a HTTP status 202
-
 ### Response: HTTP 301
 
 The library maps the original domain, transforms as appropriate and returns the new URL via HTTP 301
@@ -34,6 +32,11 @@ foo.com -> bar.com/place/index.html
 
 TBD... paste in example output
 
+## Networking pre-requisites
+
+Assuming that foo.com is not this domain, the DNS CNAME for foo.com must point to the domain of this app. Depending on where 
+and how you host the app, using DNS A records is possible but more fragile.
+
 ## Usage
 
 A JSON document is used to define the transformations that are required. The document requires two objects with 
@@ -56,6 +59,10 @@ For the drop operation there are a two more specific properties:
 | location      | string  | first, last or nth           | Yes        | first         |
 | count         | number  | number of path elements to drop | Yes     | 0             |
 
+
+## Performance
+
+By default the application has a maximum response time of 500ms, after which it will return a HTTP status 202
 
 ## Limitations
 
@@ -90,6 +97,8 @@ You can tweak the application behaviour with a small number of options
 | MONGO_COLLECTION  | Document collection name | redirections |
 | REDIS_TTL_SECONDS | # Seconds REDIS caches values | 30 |
 | SLA_MILLISECONDS | # Milliseconds before SLA fails (HTTP 202 response) | 500 |
+
+## Examples
 
 ###### Example 1: Path redirection
 
@@ -202,13 +211,13 @@ You can tweak the application behaviour with a small number of options
 }
 ```
 
-###### Example 3: Path transformations - drop
+###### Example 3: Path transformations - drop 2 elements from the start of the path
 
 ```JavaScript
 {
   "source-domain": {
     "domain": "foo.com",
-    "path": "/old/path"
+    "path": "/will-be/dropped/old/path"
   },
   "target-domain": {
     "domain": "bar.com",
@@ -243,6 +252,10 @@ be restarted or interrupted in anyway to maintain route data.
 
 The non regex options are provided for the people who are more comfortable with simple options rather than the more 
 magical regexes.
+
+### Is it possible to use this application as a reverse proxy?
+
+No. That's another, much more complex use case.
 
 ## License
 
