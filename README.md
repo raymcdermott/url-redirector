@@ -16,13 +16,19 @@ Specifically, 301 is recommended by Google to change the URL of a page as it is 
 
 ## What redirections are supported?
 
-#### Original Domain -> New Domain redirection
+#### This Domain / path -> New Domain / path redirection
+
+this.com/foo/bar -> that.com/foo/bar
+
+TBD... paste in example output
+
+#### Another Domain -> New Domain redirection
 
 foo.com -> bar.com
 
 TBD... paste in example output
 
-#### Original Domain -> New Domain + path redirection
+#### Another Domain -> New Domain + path redirection
 
 foo.com -> bar.com/place/index.html
 
@@ -36,9 +42,20 @@ the same structure: source-domain and target-domain. The table lists the support
 | Property      | Type    | Values          | Required?  | Default Value |
 | --------      | ------- | --------------- | --------   | ------------- |
 | scheme        | string  | http or https   | No         | "http"        |
-| domain        | string  | domain name     | Yes        | None          |
+| domain        | string  | domain name     | No         | Current domain |
 | port          | number  | valid HTTP/S port | No       | None          |
 | path          | string  | resource path     | No       | None          |
+| operations    | object  | see other table | No         | None          |
+
+A set of operations are supported to mutate the path. The mutation operations are one of prepend, append, regex or drop
+
+For the drop operation there are a two more specific properties:
+
+| Property      | Type    | Values                       | Required?  | Default Value |
+| --------      | ------- | ---------------------------- | --------   | ------------- |
+| location      | string  | first, last or nth           | Yes        | first         |
+| count         | number  | number of path elements to drop | Yes     | 0             |
+
 
 ## Limitations
 
@@ -74,6 +91,19 @@ You can tweak the application behaviour with a small number of options
 | REDIS_TTL_SECONDS | # Seconds REDIS caches values | 30 |
 | SLA_MILLISECONDS | # Milliseconds before SLA fails (HTTP 202 response) | 500 |
 
+###### Example 1: Path redirection
+
+```JavaScript
+{
+  "source-domain": {
+    "path": "/google"
+  },
+  "target-domain": {
+    "domain": "www.google.com"
+  }
+}
+```
+
 ###### Example 1: Domain redirection
 
 ```JavaScript
@@ -101,7 +131,7 @@ You can tweak the application behaviour with a small number of options
 }
 ```
 
-###### Example 3: All options in use
+###### Example 3: All domain and path redirections options (without path transformations)
 
 ```JavaScript
 {
@@ -120,6 +150,76 @@ You can tweak the application behaviour with a small number of options
 }
 ```
 
+###### Example 3: Path transformations - prepend
+
+```JavaScript
+{
+  "source-domain": {
+    "domain": "foo.com",
+    "path": "/old/path"
+  },
+  "target-domain": {
+    "domain": "bar.com",
+    "operations": {
+      "prepend" : "/something/at/the/start/"
+    }
+  }
+}
+```
+
+###### Example 3: Path transformations - append
+
+```JavaScript
+{
+  "source-domain": {
+    "domain": "foo.com",
+    "path": "/old/path"
+  },
+  "target-domain": {
+    "domain": "bar.com",
+    "operations": {
+      "append" : "/something/at/the/end"
+    }
+  }
+}
+```
+
+## TODO: Regex example
+###### Example 3: Path transformations - regex
+
+```JavaScript
+{
+  "source-domain": {
+    "domain": "foo.com",
+    "path": "/old/path"
+  },
+  "target-domain": {
+    "domain": "bar.com",
+    "operations": {
+      "regex" : "TDB"
+    }
+  }
+}
+```
+
+###### Example 3: Path transformations - drop
+
+```JavaScript
+{
+  "source-domain": {
+    "domain": "foo.com",
+    "path": "/old/path"
+  },
+  "target-domain": {
+    "domain": "bar.com",
+    "operations": {
+      "drop" : "start",
+      "count" : 2
+    }
+  }
+}
+```
+
 ## Testing
 
 The application comes with a number of pre-built tests to ensure that the general logic is valid.
@@ -131,6 +231,18 @@ Please extend the test suite with your specific needs.
 ## Pull requests
 
 I will accept pull requests for the core logic and especially for any new tests.
+
+## FAQ
+
+### Why not just support hard coded regex?
+
+This application supports regexes where they are most commonly applied (to mutate path values). 
+
+The major advantage of this application is that the data is managed in MongoDB and so the application does not need to 
+be restarted or interrupted in anyway to maintain route data.
+
+The non regex options are provided for the people who are more comfortable with simple options rather than the more 
+magical regexes.
 
 ## License
 
