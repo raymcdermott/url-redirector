@@ -218,9 +218,9 @@
   (http-client/get (http-client/client) url))
 
 (defn sla-fail-message []
-  {:body    (str "Unable to fetch S3 URL mapping data - please try again later")
+  {:body    (str "We are busy and responses are too slow - please try again soon")
    :headers {"Content-Type" "text/plain"}
-   :status  500})
+   :status  202})
 
 (defn generate-response [url]
   (let [sla (or (env :sla-milliseconds) 500)]

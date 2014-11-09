@@ -14,19 +14,19 @@ Specifically, 301 is recommended by Google to change the URL of a page as it is 
 
 ## What redirections are supported?
 
-#### This Domain / path -> New Domain / path redirection
+#### This Domain / path -> This Domain / other-path (only transform the path)
+
+this.com/foo/bar -> this.com/baz
+
+TBD... paste in example output
+
+#### This Domain / path -> New Domain / path redirection (only transform the domain)
 
 this.com/foo/bar -> that.com/foo/bar
 
 TBD... paste in example output
 
-#### Another Domain -> New Domain redirection
-
-foo.com -> bar.com
-
-TBD... paste in example output
-
-#### Another Domain -> New Domain + path redirection
+#### Another Domain -> New Domain + path redirection (transform domain and path) 
 
 foo.com -> bar.com/place/index.html
 
@@ -40,7 +40,7 @@ and how you host the app, using DNS A records is possible but more fragile.
 ## Usage
 
 A JSON document is used to define the transformations that are required. The document requires two objects with 
-the same structure: source-domain and target-domain. The table lists the supported properties:
+the same structure: source and target. The table lists the supported properties:
 
 | Property      | Type    | Values          | Required?  | Default Value |
 | --------      | ------- | --------------- | --------   | ------------- |
@@ -50,11 +50,11 @@ the same structure: source-domain and target-domain. The table lists the support
 | path          | string  | resource path     | No       | None          |
 | operations    | object  | see other table | No         | None          |
 
-A set of operations are supported to mutate the path. The mutation operations are one of `prepend`, `append`, `regex` or `drop`
+A set of operations are supported to mutate the path. The mutation operations are one of `prepend`, `append` or `drop`
 
-The operations `prepend`, `append`, `regex` options take a string value that will be applied.
+The operations `prepend` and `append` options take a string value that will be applied.
 
-The drop operation has two more specific properties:
+The `drop` operation has two more specific properties:
 
 | Property      | Type    | Values                       | Required?  | Default Value |
 | --------      | ------- | ---------------------------- | --------   | ------------- |
@@ -64,19 +64,23 @@ The drop operation has two more specific properties:
 
 ## Performance
 
-By default the application has a maximum response time of 500ms, after which it will return a HTTP status 202
+Assuming the components work this service will, on average, add no more than 1ms overhead (excluding network)
+
+Benchmarks TBD...
+
+Optionally a maximum response time limit can be imposed, after which the app will return a HTTP status 500.
 
 ## Limitations
 
 In the existing design, no attempt is made to validate the transformed URLs.
 
-## Notes for PAAS platforms (for example Heroku)
+## Notes for PAAS platforms
 
 ### Heroku
 
 The source domain must be added to the list of domains supported by the application. 
 
-This function is *NOT* provided by this application.
+This feature is *NOT* provided by this application.
 
 ## Dependencies
 
@@ -97,19 +101,32 @@ You can tweak the application behaviour with a small number of options
 | --------      | -------          | ------------- |
 | PORT | Port # for exposed HTTP endpoint | 5000 |
 | MONGO_COLLECTION  | Document collection name | redirections |
-| REDIS_TTL_SECONDS | # Seconds REDIS caches values | 30 |
-| SLA_MILLISECONDS | # Milliseconds before SLA fails (HTTP 202 response) | 500 |
+| REDIS_TTL_SECONDS | # Seconds REDIS caches values | 60 |
+| SLA_MILLISECONDS | # Milliseconds before SLA fails (HTTP 500 response) | none |
 
 ## Examples
 
-###### Example 1: Path redirection
+###### Example 1: Path redirection (same domain)
 
 ```JavaScript
 {
-  "source-domain": {
+  "source": {
+    "path": "/default-search/google"
+  },
+  "target": {
+    "path": "/default-search/duckduckgo"
+  }
+}
+```
+
+###### Example 1: Path redirection (new domain)
+
+```JavaScript
+{
+  "source": {
     "path": "/google"
   },
-  "target-domain": {
+  "target": {
     "domain": "www.google.com"
   }
 }
@@ -119,10 +136,10 @@ You can tweak the application behaviour with a small number of options
 
 ```JavaScript
 {
-  "source-domain": {
+  "source": {
     "domain": "foo.com"
   },
-  "target-domain": {
+  "target": {
     "domain": "bar.com"
   }
 }
@@ -132,10 +149,10 @@ You can tweak the application behaviour with a small number of options
 
 ```JavaScript
 {
-  "source-domain": {
+  "source": {
     "domain": "foo.com"
   },
-  "target-domain": {
+  "target": {
     "domain": "bar.com",
     "path": "/new/path"
   }
@@ -146,13 +163,13 @@ You can tweak the application behaviour with a small number of options
 
 ```JavaScript
 {
-  "source-domain": {
+  "source": {
     "scheme" : "http",
     "domain": "foo.com",
     "port": 8080,
     "path": "/old/path"
   },
-  "target-domain": {
+  "target": {
     "scheme" : "https",
     "domain": "bar.com",
     "port": 553,
@@ -165,11 +182,11 @@ You can tweak the application behaviour with a small number of options
 
 ```JavaScript
 {
-  "source-domain": {
+  "source": {
     "domain": "foo.com",
     "path": "/old/path"
   },
-  "target-domain": {
+  "target": {
     "domain": "bar.com",
     "operations": {
       "prepend" : "/something/at/the/start/"
@@ -182,32 +199,14 @@ You can tweak the application behaviour with a small number of options
 
 ```JavaScript
 {
-  "source-domain": {
+  "source": {
     "domain": "foo.com",
     "path": "/old/path"
   },
-  "target-domain": {
+  "target": {
     "domain": "bar.com",
     "operations": {
       "append" : "/something/at/the/end"
-    }
-  }
-}
-```
-
-## TODO: Regex example
-###### Example 3: Path transformations - regex
-
-```JavaScript
-{
-  "source-domain": {
-    "domain": "foo.com",
-    "path": "/old/path"
-  },
-  "target-domain": {
-    "domain": "bar.com",
-    "operations": {
-      "regex" : "TDB"
     }
   }
 }
@@ -217,11 +216,11 @@ You can tweak the application behaviour with a small number of options
 
 ```JavaScript
 {
-  "source-domain": {
+  "source": {
     "domain": "foo.com",
     "path": "/will-be/dropped/old/path"
   },
-  "target-domain": {
+  "target": {
     "domain": "bar.com",
     "operations": {
       "drop" : "start",
@@ -245,19 +244,21 @@ I will accept pull requests for the core logic and especially for any new tests.
 
 ## FAQ
 
-### Why not just support hard coded regex?
+### Do you support query parameter forwarding
 
-This application supports regexes where they are most commonly applied (to mutate path values). 
+Yes. Any query parameters are passed along unaltered. 
 
-The major advantage of this application is that the data is managed in MongoDB and so the application does not need to 
-be restarted or interrupted in anyway to maintain route data.
+Let me know (or make a pull request!) if you need support for transforms.
 
-The non regex options are provided for the people who are more comfortable with simple options rather than the more 
-magical regexes.
+### Do you support header forwarding
+
+Yes. Any headers are passed along unaltered. 
+
+Let me know (or make a pull request!) if you need support for transforms.
 
 ### Is it possible to use this application as a reverse proxy?
 
-No. That's another, much more complex use case.
+No. That's another use case. 
 
 ## License
 
