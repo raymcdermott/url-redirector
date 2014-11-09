@@ -64,8 +64,6 @@ The `drop` operation has two more specific properties:
 
 ## Performance
 
-Assuming the components work this service will, on average, add no more than 1ms overhead (excluding network)
-
 Benchmarks TBD...
 
 Optionally a maximum response time limit can be imposed, after which the app will return a HTTP status 500.
